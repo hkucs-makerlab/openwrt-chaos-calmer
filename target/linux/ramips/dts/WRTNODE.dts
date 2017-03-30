@@ -18,6 +18,18 @@
 			status = "okay";
 		};
 
+		i2c@900 {
+			compatible = "ralink,mt7620n-i2c", "ralink,rt2880-i2c";
+			reg = <0x900 0x100>;
+			resets = <&rstctrl 16>;
+			reset-names = "i2c";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2c_pins>;
+			status = "okay";
+		};
+
 		spi@b00 {
 			status = "okay";
 
@@ -52,6 +64,15 @@
 					reg = <0x50000 0xfb0000>;
 				};
 			};
+			spidev@1 {
+				#address-cells = <1>;
+				#size-cells = <1>;
+				compatible = "spidev";
+				reg = <1 0>;
+				linux,modalias = "spidev", "spidev";
+				spi-max-frequency = <10000000>;
+
+			};
 		};
 	};
 
@@ -79,7 +100,15 @@
 				ralink,function = "gpio";
 			};
 		};
+
+		i2c_pins: i2c {
+		    i2c {
+			ralink,group = "i2c";
+		       ralink,function = "i2c";
+		     };
+		};
 	};
+
 	gpio-leds {
 		compatible = "gpio-leds";
 		indicator {
