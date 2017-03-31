@@ -849,3 +849,45 @@ endef
 
 $(eval $(call KernelPackage,nft-nat6))
 
+IPVS_MODULES:= \
+	ipvs/ip_vs \
+	ipvs/ip_vs_wlc
+
+define KernelPackage/ipvs
+  SUBMENU:=Netfilter Extensions
+  TITLE:=IP Virtual Server modules
+  DEPENDS:=+kmod-ipv6 +kmod-lib-crc32c
+  KCONFIG:= \
+	CONFIG_IP_VS \
+	CONFIG_IP_VS_IPV6=y \
+	CONFIG_IP_VS_DEBUG=n \
+	CONFIG_IP_VS_TAB_BITS=12 \
+	CONFIG_IP_VS_PROTO_TCP=y \
+	CONFIG_IP_VS_PROTO_UDP=y \
+	CONFIG_IP_VS_PROTO_AH_ESP=y \
+	CONFIG_IP_VS_PROTO_ESP=y \
+	CONFIG_IP_VS_PROTO_AH=y \
+	CONFIG_IP_VS_PROTO_SCTP=y \
+	CONFIG_IP_VS_RR \
+	CONFIG_IP_VS_WRR \
+	CONFIG_IP_VS_LC \
+	CONFIG_IP_VS_WLC \
+	CONFIG_IP_VS_FO \
+	CONFIG_IP_VS_LBLC \
+	CONFIG_IP_VS_LBLCR \
+	CONFIG_IP_VS_DH \
+	CONFIG_IP_VS_SH \
+	CONFIG_IP_VS_SED \
+	CONFIG_IP_VS_NQ \
+	CONFIG_IP_VS_SH_TAB_BITS=8 \
+	CONFIG_IP_VS_FTP=m \
+	CONFIG_IP_VS_NFCT=n \
+	CONFIG_IP_VS_PE_SIP=n \
+	CONFIG_NETFILTER_XT_MATCH_IPVS=n
+
+  FILES:=$(foreach mod,$(IPVS_MODULES),$(LINUX_DIR)/net/netfilter/$(mod).ko)
+  AUTOLOAD:=$(call AutoLoad,70,$(notdir $(IPVS_MODULES)))
+  $(call AddDepends/ipt,+kmod-ipt-conntrack)
+endef
+
+$(eval $(call KernelPackage,ipvs))
